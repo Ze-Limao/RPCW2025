@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Answer Result</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<body>
+    <h1 class="{{ 'text-green-500' if correct else 'text-red-500' }} font-bold text-2xl ">{{ 'Correct!' if correct else 'Wrong Answer!' }}</h1>
+    <div class="bg-gray-200 p-4 rounded m-2">
+        <p>The correct answer was: {{ correct_answer }}</p>
+        <p>Your current score: {{ score }}</p>
+    </div>
+    <div class="m-4">
+        <a href="/quiz" class="rounded bg-blue-500 hover:bg-blue-600 p-2 text-white">Next Question</a> | 
+        <a href="/score" class="rounded bg-red-500 hover:bg-red-600 p-2 text-white">Finish Quiz</a>
+    </div>
+</body>
+</html>
