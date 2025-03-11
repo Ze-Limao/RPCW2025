@@ -5,22 +5,27 @@
     <meta charset="UTF-8">
     <title>Culture Compass Quiz</title>
 </head>
-<body>
-    <h1 class="font-bold text-2xl">Culture Compass Quiz</h1>
-    <p class="text-xl">Score: {{ session.get('score', 0) }}</p>
+<body class="p-4">
+    <h1 class="font-bold text-2xl pl-2">Culture Compass Quiz</h1>
+    <p class="text-xl pl-2">Score: {{ session.get('score', 0) }}</p>
     <form method="POST" action="/quiz" class="rounded bg-gray-200 p-4 m-2">
         <p class="font-bold text-xl">{{ question.question }}</p>
-        <div class="bg-gray-300 p-2 mt-2 rounded">
-        {% for option in question.options %}
-            <label>
-                <input type="radio" name="answer" value="{{ option }}" required>
-                {{ option }}
-            </label><br>
-        {% endfor %}
+        <div class="bg-gray-300 mt-2 rounded">
+        {% if question['type'] == 'write' %}
+            <input display="flex" type="text" name="answer" class="w-full p-2 rounded border border-gray-400" required>
+            <input type="hidden" name="correct_answer" value="{{ question.options[0] }}">
+        {% else %}
+            {% for option in question.options %}
+                <label>
+                    <input type="radio" name="answer" value="{{ option }}" required>
+                    {{ option }}
+                </label><br>
+            {% endfor %}
+        {% endif %}
         </div>
         <input type="hidden" name="question" value="{{ question.question }}">
-        <div class="m-4">
-            <button type="submit" class="rounded bg-blue-500 hover:bg-blue-600 text-white p-2 cursor-pointer">Submit Answer</button>
+        <div class="mt-4">
+            <button type="submit" class="rounded bg-blue-500 hover:bg-blue-600 p-2 text-white cursor-pointer">Submit Answer</button>
         </div>
     </form>
 </body>

@@ -4,7 +4,7 @@ Este projeto consiste num quiz sobre a história de Portugal, desenvolvido utili
 Existem 3 formatos de pergunta: 
 - Escolha Múltipla
 - Verdadeiro e Falso
-- Correspondência 
+- Escrita 
 
 1. Instalar dependências:
      ```

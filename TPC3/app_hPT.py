@@ -26,7 +26,7 @@ def quiz():
 
         for question in questions:
             if question['question'] == question_text:
-                correct = question['answer'] == user_answer
+                correct = question['answer'].strip().lower() == user_answer.strip().lower()
                 session['score'] = session.get('score', 0) + (1 if correct else 0)
                 session['questions'] = questions[:-1]
                 return render_template('result.html', correct=correct, correct_answer=question['answer'], score=session['score'])

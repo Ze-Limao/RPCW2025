@@ -8,7 +8,7 @@ prefixes = """
         PREFIX : <http://www.semanticweb.org/andre/ontologies/2015/6/historia#>
         """
 
-sparql = SPARQLWrapper("http://localhost:7200/repositories/historia_portugal")
+sparql = SPARQLWrapper("http://localhost:7200/repositories/historiaPT")
 
 
 def execute_query(query):
@@ -44,7 +44,7 @@ def fetch_question_king_birth():
             options.append(random_date)
     random.shuffle(options)
 
-    question = {"question": question_text, "options": options, "answer": date}
+    question = {"question": question_text, "options": options, "answer": date, "type": 'select'}
 
     return question
 
@@ -76,7 +76,7 @@ def fetch_question_dinasty():
             options.append(random_dinasty)
     random.shuffle(options)
 
-    question = {"question": question_text, "options": options, "answer": dinasty}
+    question = {"question": question_text, "options": options, "answer": dinasty, "type": 'select'}
 
     return question
 
@@ -120,7 +120,7 @@ def fetch_question_kings_per_dinasty():
         answer = "False"
         options = ["True", "False"]
 
-    question = {"question": question_text, "options": options, "answer": answer}
+    question = {"question": question_text, "options": options, "answer": answer, "type": 'select'}
 
     return question
 
@@ -159,12 +159,12 @@ def fetch_question_surname():
         answer = "False"
         options = ["True", "False"]
 
-    question = {"question": question_text, "options": options, "answer": answer}
+    question = {"question": question_text, "options": options, "answer": answer, "type": 'select'}
 
     return question
 
 
-# Correspondencia
+# Write Question
 def fetch_question_kings_conquests():
     results = execute_query(
         prefixes
@@ -181,22 +181,12 @@ def fetch_question_kings_conquests():
     )
     random_binding = random.choice(results["results"]["bindings"])
     conquest_name = random_binding["nome"]["value"]
-    date = random_binding["data"]["value"]
     king = random_binding["nomeMonarca"]["value"]
 
     question_text = f"Which king led the conquest of {conquest_name}?"
     options = [king]
 
-    while len(options) < 4:
-        random_king = random.choice(results["results"]["bindings"])["nomeMonarca"][
-            "value"
-        ]
-        if random_king not in options:
-            options.append(random_king)
-
-    random.shuffle(options)
-
-    question = {"question": question_text, "options": options, "answer": king}
+    question = {"question": question_text, "options": options, "answer": king, "type": 'write'}
 
     return question
 
