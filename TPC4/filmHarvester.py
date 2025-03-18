@@ -26,14 +26,15 @@ def get_filmes():
     movies_query = """
     SELECT DISTINCT ?id ?title ?country ?releaseDate ?director ?abstract
 	WHERE {{
-		?id dbo:abstract ?abstract .
+        ?id a dbo:Film .
 		?id rdfs:label ?title .
+		?id dbo:abstract ?abstract .
 		OPTIONAL {{ ?id dbo:country ?country . }}
 		OPTIONAL {{ ?id dbo:releaseDate ?releaseDate . }}
 		OPTIONAL {{ ?id dbo:director ?director . }}
 		FILTER (lang(?abstract) = "en") .
 		FILTER (lang(?title) = "en") .
-	}} LIMIT 50
+	}} LIMIT 1
     """
 
     films = query_graphdb(movies_query)
@@ -46,23 +47,24 @@ def get_filmes():
         director = film.get("director", {}).get("value", "")
         abstract = film.get("abstract", {}).get("value", "")
 
-        actor_query = f"""
+        cast_query = f"""
         SELECT DISTINCT ?actor ?name ?birthDate ?nationality WHERE {{
             <{film_id}> dbo:starring ?actor .
             OPTIONAL {{ ?actor rdfs:label ?name . FILTER (lang(?name) = "en") . }}
             OPTIONAL {{ ?actor dbo:birthDate ?birthDate . }}
             OPTIONAL {{ ?actor dbo:nationality ?nationality . }}
-        }}
+        }} LIMIT 5
         """
-        result2 = query_graphdb(actor_query)
+
+        result = query_graphdb(cast_query)
         cast = [
             {
                 "id": extract_name_from_url(actor.get("actor", {}).get("value", "")),
                 "nome": actor.get("name", {}).get("value", ""),
                 "dataNasc": actor.get("birthDate", {}).get("value", ""),
-                "origem": actor.get("nationality", {}).get("value", "")
+                "origem": extract_name_from_url(actor.get("nationality", {}).get("value", ""))
             }
-            for actor in result2.get("results", {}).get("bindings", [])
+            for actor in result.get("results", {}).get("bindings", [])
         ]
 
         genres_query = f"""
@@ -70,10 +72,10 @@ def get_filmes():
             <{film_id}> dbo:genre ?genre .
             ?genre rdfs:label ?genreLabel .
             FILTER (lang(?genreLabel) = "en") .
-        }}
+        }} LIMIT 5
         """
         result3 = query_graphdb(genres_query)
-        genres = [g["genreLabel"]["value"] for g in result3.get("results", {}).get("bindings", [])]
+        genres = [genre.get("genreLabel", {}).get("value", "") for genre in result3.get("results", {}).get("bindings", [])]
 
         dataset.append(
             {
