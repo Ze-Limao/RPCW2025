@@ -34,7 +34,7 @@ def get_filmes():
 		OPTIONAL {{ ?id dbo:director ?director . }}
 		FILTER (lang(?abstract) = "en") .
 		FILTER (lang(?title) = "en") .
-	}} LIMIT 1
+	}} LIMIT 200
     """
 
     films = query_graphdb(movies_query)
