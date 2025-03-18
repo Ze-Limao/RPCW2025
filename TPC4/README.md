@@ -1,21 +1,22 @@
-=🎬 Movie Data Extractor
+# 🎬 Movie Data Extractor
 
 This Python script fetches movie data from DBpedia using SPARQL queries, extracting details like title, country, release date, producer, cast, genres, and synopsis. The data is then stored in a structured JSON file.
-== 🚀 Features
+
+## 🚀 Features
 
     Retrieves movie details (title, country, release date, producer, abstract).
     Extracts actors' information (name, birthdate, nationality).
-    Fetches movie genres dynamically.
+    Fetches movie genres.
     Saves the dataset in dataset.json.
 
-== ▶️ Usage
+## ▶️ Usage
 
 Run the script:
 ```
 python main.py  
 ```
 
-== 📂 Output Format (dataset.json)
+## 📂 Output Format (dataset.json)
 [
     {
         "id": "Inception",
