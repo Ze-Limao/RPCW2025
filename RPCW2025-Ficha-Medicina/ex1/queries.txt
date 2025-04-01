@@ -1,0 +1,31 @@
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+
+select (count (distinct ?class) as ?nclasses) where {
+    ?class a owl:Class .
+}
+25
+
+select (count(distinct ?obj) AS ?nprop)
+where{
+    ?obj a owl:ObjectProperty .
+}
+22
+
+select (count(distinct ?ind) AS ?nInd)
+where{
+    ?ind a owl:NamedIndividual .
+}
+41
+
+select distinct ?plantador where {
+    ?plantador a :Pessoa .
+    ?plantador ?cultiva :Tomates .
+}
+Sr_Carlos
+
+select distinct ?s
+where{
+    ?s a :Pessoa .
+    ?s :contrata ?o .
+}
+Joao

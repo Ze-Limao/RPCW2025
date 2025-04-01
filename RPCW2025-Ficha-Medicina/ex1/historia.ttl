@@ -1,0 +1,290 @@
+@prefix : <http://www.semanticweb.org/jeswi/ontologies/2025/historia1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.semanticweb.org/jeswi/ontologies/2025/historia1/> .
+
+<http://www.semanticweb.org/jeswi/ontologies/2025/historia1> rdf:type owl:Ontology .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Protege
+:Protege rdf:type owl:ObjectProperty ;
+         rdfs:domain :Animal ;
+         rdfs:range :Pessoa .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#ajuda
+:ajuda rdf:type owl:ObjectProperty ;
+       rdfs:domain :Pessoa ;
+       rdfs:range :Pessoa .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#contrata
+:contrata rdf:type owl:ObjectProperty ;
+          owl:inverseOf :éContratado ;
+          rdfs:domain :Pessoa ;
+          rdfs:range :Trabalhador .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#possui
+:possui rdf:type owl:ObjectProperty ;
+        rdfs:domain :Pessoa ;
+        rdfs:range :carro .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#viveEm
+:viveEm rdf:type owl:ObjectProperty ;
+        rdfs:domain :Pessoa .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#éContratado
+:éContratado rdf:type owl:ObjectProperty .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/cria
+:cria rdf:type owl:ObjectProperty .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/cultiva
+:cultiva rdf:type owl:ObjectProperty ;
+         rdfs:domain :Pessoa ;
+         rdfs:range [ rdf:type owl:Class ;
+                      owl:unionOf ( :Vegetais
+                                    :Fruta
+                                  )
+                    ] .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/éFilho
+:éFilho rdf:type owl:ObjectProperty ;
+        owl:inverseOf :éProgenitor .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/éProgenitor
+:éProgenitor rdf:type owl:ObjectProperty .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Refeiçao
+:Refeiçao rdf:type owl:DatatypeProperty ;
+          rdfs:subPropertyOf owl:topDataProperty ;
+          rdfs:domain :Trabalhador .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Salario
+:Salario rdf:type owl:DatatypeProperty ;
+         rdfs:domain :Trabalhador .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/temNome
+:temNome rdf:type owl:DatatypeProperty ;
+         rdfs:domain [ rdf:type owl:Class ;
+                       owl:unionOf ( :Animal
+                                     :Fruta
+                                     :Pessoa
+                                   )
+                     ] ;
+         rdfs:range xsd:string .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Trabalhador
+:Trabalhador rdf:type owl:Class ;
+             rdfs:subClassOf :Pessoa .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Vegetais
+:Vegetais rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#carro
+:carro rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Agricultor
+:Agricultor rdf:type owl:Class ;
+            owl:equivalentClass [ rdf:type owl:Restriction ;
+                                  owl:onProperty :cultiva ;
+                                  owl:someValuesFrom [ rdf:type owl:Class ;
+                                                       owl:unionOf ( :Vegetais
+                                                                     :Fruta
+                                                                   )
+                                                     ]
+                                ] ;
+            rdfs:subClassOf :Pessoa .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Animal
+:Animal rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Fruta
+:Fruta rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Localidade
+:Localidade rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Pessoa
+:Pessoa rdf:type owl:Class .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Alface
+:Alface rdf:type owl:NamedIndividual ,
+                 :Vegetais .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Cenoura
+:Cenoura rdf:type owl:NamedIndividual ,
+                  :Vegetais .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Porcos
+:Porcos rdf:type owl:NamedIndividual ,
+                 :Animal ;
+        :temNome "Porcos" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Rex
+:Rex rdf:type owl:NamedIndividual ,
+              :Animal ;
+     :Protege :Ana ,
+              :João ,
+              :Maria ,
+              :Pedro .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Sr_Carlos
+:Sr_Carlos rdf:type owl:NamedIndividual ,
+                    :Pessoa ;
+           :viveEm :São_Jose ;
+           :cultiva :Alface ,
+                    :Cenoura ,
+                    :Tomates ;
+           :temNome "Carlos" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#São_Jose
+:São_Jose rdf:type owl:NamedIndividual ,
+                   :Localidade ;
+          :temNome "Sao José" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Tomates
+:Tomates rdf:type owl:NamedIndividual ,
+                  :Vegetais .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Trabalhador1
+:Trabalhador1 rdf:type owl:NamedIndividual ,
+                       :Pessoa ;
+              :Refeiçao "comeu" ;
+              :Salario 10 ;
+              :temNome "Roberto" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#Trabalhador2
+:Trabalhador2 rdf:type owl:NamedIndividual ,
+                       :Pessoa ;
+              :Refeiçao "comeu" ;
+              :Salario 9 ;
+              :temNome "Roberto" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#galinhas
+:galinhas rdf:type owl:NamedIndividual ,
+                   :Animal ;
+          :temNome "Galinhas" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#trator
+:trator rdf:type owl:NamedIndividual ,
+                 :carro .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1#vacas
+:vacas rdf:type owl:NamedIndividual ,
+                :Animal ;
+       :temNome "Vacas" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Ana
+:Ana rdf:type owl:NamedIndividual ,
+              :Pessoa ;
+     :ajuda :Maria ;
+     :possui :trator ;
+     :éFilho :João ,
+             :Maria ;
+     :temNome "Ana" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Banana
+:Banana rdf:type owl:NamedIndividual ,
+                 :Fruta ;
+        :temNome "Banana" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/João
+:João rdf:type owl:NamedIndividual ,
+               :Pessoa ;
+      :contrata :Trabalhador1 ,
+                :Trabalhador2 ;
+      :possui :trator ;
+      :viveEm :São_Jose ;
+      :cria :Porcos ,
+            :galinhas ,
+            :vacas ;
+      :cultiva :Banana ,
+               :Laranja ,
+               :Maça ;
+      :temNome "João" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Laranja
+:Laranja rdf:type owl:NamedIndividual ,
+                  :Fruta ;
+         :temNome "Laranja" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Maria
+:Maria rdf:type owl:NamedIndividual ,
+                :Pessoa ;
+       :possui :trator ;
+       :viveEm :São_Jose ;
+       :temNome "Maria" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Maça
+:Maça rdf:type owl:NamedIndividual ,
+               :Fruta ;
+      :temNome "Maça" .
+
+
+###  http://www.semanticweb.org/jeswi/ontologies/2025/historia1/Pedro
+:Pedro rdf:type owl:NamedIndividual ,
+                :Pessoa ;
+       :ajuda :João ;
+       :possui :trator ;
+       :viveEm :São_Jose ;
+       :éFilho :João ,
+               :Maria ;
+       :temNome "Pedro" .
+
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi
