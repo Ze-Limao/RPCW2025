@@ -1,5 +1,5 @@
 from rdflib import Graph, Namespace, RDF, RDFS, OWL, Literal
-import csv
+import csv, json, uuid
 
 # Define Namespace
 EX = Namespace("http://www.example.org/disease-ontology#")
@@ -33,10 +33,13 @@ new_graph.add((EX.hasTreatment, RDF.type, OWL.ObjectProperty))
 new_graph.add((EX.hasTreatment, RDFS.domain, EX.Disease))
 new_graph.add((EX.hasTreatment, RDFS.range, EX.Treatment))
 
-# Define Disease Description Property
 new_graph.add((EX.hasDescription, RDF.type, OWL.DatatypeProperty))
 new_graph.add((EX.hasDescription, RDFS.domain, EX.Disease))
 new_graph.add((EX.hasDescription, RDFS.range, RDFS.Literal))
+
+new_graph.add((EX.hasName, RDF.type, OWL.DatatypeProperty))
+new_graph.add((EX.hasName, RDFS.domain, EX.Patient))
+new_graph.add((EX.hasName, RDFS.range, RDFS.Literal))
 
 # Transfer existing diseases
 for disease_uri in existing_graph.subjects(RDF.type, EX.Disease):
@@ -97,6 +100,23 @@ with open("Disease_Treatment.csv", "r", encoding="utf-8") as csv_file:
             new_graph.add((treatment_uri, RDF.type, EX.Treatment))  
             new_graph.add((disease_uri, EX.hasTreatment, treatment_uri))  
 
-new_graph.serialize(destination="final.ttl", format="turtle")
+# Load Patient Data
+with open("doentes.json", "r", encoding="utf-8") as json_file:
+    patients_data = json.load(json_file)
 
-print("Ontology updated successfully and saved as 'final.ttl'")
+# Process Patients
+for patient in patients_data:
+    patient_id = f"Patient_{uuid.uuid4().hex[:8]}"
+    patient_uri = EX[patient_id]
+    
+    # Add patient instance
+    new_graph.add((patient_uri, RDF.type, EX.Patient))
+    new_graph.add((patient_uri, EX.hasName, Literal(patient["nome"])))
+    
+    # Associate symptoms
+    for symptom in patient.get("sintomas", []):
+        symptom_uri = EX[symptom.replace(" ", "_")]
+        new_graph.add((symptom_uri, RDF.type, EX.Symptom))
+        new_graph.add((patient_uri, EX.hasSymptom, symptom_uri))
+
+new_graph.serialize(destination="med_doentes.ttl", format="turtle")
