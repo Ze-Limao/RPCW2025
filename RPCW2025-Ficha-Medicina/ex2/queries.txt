@@ -1,0 +1,44 @@
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+prefix : <http://www.example.org/disease-ontology#>
+
+select (count(?disease) as ?nDiseases)
+where {
+  ?disease a :Disease .
+}
+41
+
+
+select ?disease
+where {
+  ?disease a :Disease ;
+           :hasSymptom :yellowish_skin .
+}
+:Alcoholic_hepatitis	
+:Chronic_cholestasis	
+:Hepatitis_B	
+:Hepatitis_C
+:Hepatitis_D
+:Hepatitis_E
+:Jaundice
+:hepatitis_A
+
+
+select ?disease
+where {
+  ?disease a :Disease ;
+           :hasTreatment :exercise .
+}
+:Arthritis
+:Cervical_spondylosis
+:Diabetes
+:GERD
+:Hypothyroidism
+:Paralysis_(brain_hemorrhage)
+
+
+select ?name
+where {
+  ?patient a :Patient ;
+           :hasName ?name .
+}
+ORDER BY ASC(?name)

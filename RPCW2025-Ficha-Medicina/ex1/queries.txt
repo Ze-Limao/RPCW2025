@@ -1,4 +1,5 @@
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
+prefix : <http://www.semanticweb.org/jeswi/ontologies/2025/historia1/>
 
 select (count (distinct ?class) as ?nclasses) where {
     ?class a owl:Class .
@@ -18,14 +19,14 @@ where{
 41
 
 select distinct ?plantador where {
-    ?plantador a :Pessoa .
-    ?plantador ?cultiva :Tomates .
+    ?plantador a :Pessoa ;
+               ?cultiva :Tomates .
 }
 Sr_Carlos
 
-select distinct ?s
+select distinct ?sujeito
 where{
-    ?s a :Pessoa .
-    ?s :contrata ?o .
+    ?sujeito a :Pessoa ;
+             :contrata ?o .
 }
 Joao
