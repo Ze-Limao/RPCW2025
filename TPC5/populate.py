@@ -7,7 +7,7 @@ rdf_output = ""
 
 for id, name in data["allPeople"].items():
     rdf_output += f"""
-###  http://www.semanticweb.org/jojocoelho/ontologies/2025/cinema/{id}
+###  http://www.semanticweb.org/jeswi/ontologies/2025/cinema/{id}
 :{id} rdf:type owl:NamedIndividual ,
 						:Pessoa ;
 			   :nome "{name}" .
@@ -15,21 +15,21 @@ for id, name in data["allPeople"].items():
 
 for id in data["allCountries"]:
     rdf_output += f"""
-###  http://www.semanticweb.org/jojocoelho/ontologies/2025/cinema/{id}
+###  http://www.semanticweb.org/jeswi/ontologies/2025/cinema/{id}
 :{id} rdf:type owl:NamedIndividual ,
 						 :Pais .
 """
 
 for id in data["allLanguages"]:
     rdf_output += f"""
-###  http://www.semanticweb.org/jojocoelho/ontologies/2025/cinema/{id}
+###  http://www.semanticweb.org/jeswi/ontologies/2025/cinema/{id}
 :{id} rdf:type owl:NamedIndividual ,
 				  :Lingua .
 """
 
 for id in data["allGenres"]:
     rdf_output += f"""
-###  http://www.semanticweb.org/jojocoelho/ontologies/2025/cinema/{id}
+###  http://www.semanticweb.org/jeswi/ontologies/2025/cinema/{id}
 :{id} rdf:type owl:NamedIndividual ,
 				   :Genero .
 """
@@ -44,7 +44,7 @@ for movie in data["movies"]:
         og = f":temLingua :{originalLanguage};"
 
     rdf_output += f"""
-###  http://www.semanticweb.org/jojocoelho/ontologies/2025/cinema/{id}
+###  http://www.semanticweb.org/jeswi/ontologies/2025/cinema/{id}
 :{id} rdf:type owl:NamedIndividual ,
 				   :Filme ;
 		  :temArgumento :Argumento_{id} ;
@@ -58,7 +58,7 @@ for movie in data["movies"]:
     for person in movie["peopleInvolved"]:
         person_id = person["nconst"]
         rdf_output += f"""
-###  http://www.semanticweb.org/jojocoelho/ontologies/2025/cinema/{person_id}
+###  http://www.semanticweb.org/jeswi/ontologies/2025/cinema/{person_id}
 :{person_id} rdf:type owl:NamedIndividual ,
                           :Pessoa ;
                :nome "{person["name"]}" ;
