@@ -42,3 +42,36 @@ where {
            :hasName ?name .
 }
 ORDER BY ASC(?name)
+
+
+13.
+select ?diseaseY (count(?patientX) as ?numPatients)
+where {
+    ?patientX a :Patient .
+    ?diseaseY a :Disease .
+    ?patientX :hasDisease ?diseaseY .
+}
+group by ?diseaseY
+order by desc(?numPatients)
+
+
+14.
+select ?symptomY (count(?diseaseY) as ?numDiseases)
+where {
+    ?diseaseY a :Disease .
+    ?symptomY a :Symptom .
+    ?diseaseY :hasSymptom ?symptomY .
+}
+group by ?symptomY
+order by desc(?numDiseases)
+
+
+15.
+select ?treatmentY (count(?diseaseY) as ?numDiseases)
+where {
+    ?diseaseY a :Disease .
+    ?treatmentY a :Treatment .
+    ?diseaseY :hasTreatment ?treatmentY .
+}
+group by ?treatmentY
+order by desc(?numDiseases)
