@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Ontology - {{ pokemon.name|title }}</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+</head>
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='images/background.png') }}");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+    }
+</style>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-red-600 to-red-800 text-white shadow-lg items-center">
+        <div class="container mx-auto flex p-2 justify-between items-center">
+            <a href="/">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Pokentology" class="h-12">
+            </a>
+            <div class="flex space-x-2">
+                <a href="/generate"
+                    class="cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-white hover:text-red-700 transition-colors duration-300 flex items-center">
+                    Generate Ontology
+                </a>
+                <a href="/explore"
+                    class="cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-white hover:text-red-700 transition-colors duration-300 flex items-center">
+                    Explore
+                </a>
+                <a href="/sparql"
+                    class="cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-white hover:text-red-700 transition-colors duration-300 flex items-center">
+                    SPARQL
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    {% set type_colors = {
+    'water': 'bg-blue-500',
+    'fire': 'bg-red-500',
+    'grass': 'bg-green-500',
+    'electric': 'bg-yellow-500',
+    'bug': 'bg-green-700',
+    'normal': 'bg-gray-300',
+    'fighting': 'bg-red-700',
+    'psychic': 'bg-pink-500',
+    'rock': 'bg-yellow-700',
+    'ghost': 'bg-purple-500',
+    'dark': 'bg-gray-800',
+    'fairy': 'bg-pink-300',
+    'steel': 'bg-gray-400',
+    'ice': 'bg-blue-200',
+    'flying': 'bg-blue-300',
+    'ground': 'bg-amber-700',
+    'poison': 'bg-purple-700',
+    'dragon': 'bg-indigo-700'
+    } %}
+
+    <!-- Main Content -->
+    <div class="flex-grow container mx-auto mt-8 relative">
+        <!-- Pokemon Card -->
+        <div
+            class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-4xl transform hover:scale-101 transition-transform duration-300">
+            <!-- Pokemon Header with Curved Background -->
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 rounded-t-xl"></div>
+                <div class="relative px-6 py-8 flex justify-center">
+                    {% if pokemon.pokedex_number is defined %}
+                    <img src="https://img.pokemondb.net/sprites/home/normal/{{ pokemon.name }}.png" alt=" "
+                        class="w-40 h-40 object-contain drop-shadow-lg">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt=" "
+                        class="w-72 h-40 object-contain drop-shadow-lg">
+                    {% endif %}
+                </div>
+                <!-- Pokeball Design Element -->
+                <div
+                    class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-16 h-16 bg-white rounded-full border-4 border-gray-200 flex items-center justify-center">
+                    <div class="w-8 h-8 bg-gray-300 rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- Pokemon Info -->
+            <div class="px-6 pt-10 pb-6">
+                <div class="flex justify-center items-center">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 capitalize mb-2">{{ pokemon.name }}
+                        #{{ pokemon.pokedex_number }}</h2>
+                </div>
+                <div class="flex justify-center mb-4">
+                    {% for type in pokemon.relations.hasType %}
+                    {% if type == 'water' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-blue-500 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'fire' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-red-500 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'grass' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-green-500 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'electric' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-yellow-500 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'bug' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-green-700 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'normal' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-gray-300 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'fighting' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-red-700 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'psychic' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-pink-500 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'rock' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-yellow-700 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'ghost' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-purple-500 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'dark' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-gray-800 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'fairy' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-pink-300 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'steel' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-gray-400 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'ice' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-blue-200 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'flying' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-blue-300 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'ground' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-brown-500 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'poison' %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-purple-700 text-white mx-1">{{ type }}</span>
+                    {% elif type == 'dragon' %}
+                    {% else %}
+                    <span class="px-4 py-1 rounded-full text-sm bg-gray-500 text-white mx-1">{{ type }}</span>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- Toggle Buttons -->
+                <div class="flex space-x-2 my-4">
+                    <button id="propertiesBtn" onclick="showProperties()"
+                        class="cursor-pointer flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        Properties
+                    </button>
+                    <button id="relationshipsBtn" onclick="showRelationships()"
+                        class="cursor-pointer flex-1 bg-gray-400 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Relationships
+                    </button>
+                </div>
+
+                <!-- Properties List -->
+                <div id="propertiesList" class="mt-4">
+                    <ul class="space-y-2">
+                        {% for key, value in pokemon.items() %}
+                        {% if key not in ['name', 'relations'] %}
+                        <li class="flex justify-between py-1">
+                            <span class="text-gray-700 capitalize">{{ key.replace('_', ' ') }}</span>
+                            <span class="font-medium">{{ value }}</span>
+                        </li>
+                        <hr class="border-t border-gray-300">
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Relationships List (Hidden by default) -->
+                <div id="relationshipsList" class="mt-4 hidden">
+                    <ul class="space-y-2">
+                        {% for key, value in pokemon.relations.items() %}
+                        {% if key not in ['hasType', 'normalDamage', 'effectiveness'] %}
+                        <li class="flex items-start justify-between py-1">
+                            <span class="text-gray-700 capitalize min-w-[120px] pr-2">{{ key.replace('_', ' ') }}</span>
+                            <div class="overflow-x-auto overflow-hidden flex space-x-2 w-max">
+                                {% for val in value %}
+                                {% set color = type_colors.get(val | lower, 'bg-gray-500') %}
+                                <a href="/pokemon/{{val}}">
+                                    <span
+                                        class="px-4 py-1 rounded-full text-sm {{color}} text-white whitespace-nowrap hover:py-2">
+                                        {{ val }}
+                                    </span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </li>
+                        <hr class="border-t border-gray-300">
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12 py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2025 Pokéntology</p>
+            <p class="text-gray-400 text-sm mt-2">A tool for exploring and generating Pokemon data relationships</p>
+        </div>
+    </footer>
+
+    <script>
+        function showProperties() {
+            document.getElementById('propertiesList').classList.remove('hidden');
+            document.getElementById('relationshipsList').classList.add('hidden');
+            document.getElementById('propertiesBtn').classList.remove('bg-gray-400');
+            document.getElementById('propertiesBtn').classList.add('bg-purple-600');
+            document.getElementById('relationshipsBtn').classList.remove('bg-green-600');
+            document.getElementById('relationshipsBtn').classList.add('bg-gray-400');
+        }
+
+        function showRelationships() {
+            document.getElementById('propertiesList').classList.add('hidden');
+            document.getElementById('relationshipsList').classList.remove('hidden');
+            document.getElementById('propertiesBtn').classList.remove('bg-purple-600');
+            document.getElementById('propertiesBtn').classList.add('bg-gray-400');
+            document.getElementById('relationshipsBtn').classList.remove('bg-gray-400');
+            document.getElementById('relationshipsBtn').classList.add('bg-green-600');
+        }
+    </script>
+</body>
+
+</html>

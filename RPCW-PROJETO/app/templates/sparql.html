@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Ontology - SPARQL</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/lib/codemirror.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/mode/sparql/sparql.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/lib/codemirror.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.2/theme/dracula.css">
+    <style>
+        body {
+            background-image: url('static/images/background.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        .CodeMirror {
+            height: auto;
+            min-height: 200px;
+            border-radius: 0.375rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.875rem;
+        }
+        .cm-s-dracula.CodeMirror.CodeMirror {
+          background-color: whitesmoke !important;
+        }
+        .cm-s-dracula .CodeMirror-gutters.CodeMirror-gutters {
+            background-color: whitesmoke!important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-gradient-to-r from-red-600 to-red-800 text-white shadow-lg items-center">
+        <div class="container mx-auto flex p-2 justify-between items-center">
+            <a href="/">
+                <img src="static/images/logo.png" alt="Pokentology" class="h-12">
+            </a>
+            <div class="flex space-x-2">
+                <a href="/generate" class="cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-white hover:text-red-700 transition-colors duration-300 flex items-center">
+                    Generate Ontology
+                </a>
+                <a href="/explore" class="cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-white hover:text-red-700 transition-colors duration-300 flex items-center">
+                    Explore
+                </a>
+                <a href="/sparql" class="cursor-pointer px-4 py-2 rounded-lg bg-white text-red-700 transition-colors duration-300 flex items-center">
+                    SPARQL
+                </a>
+                <a href="/graph"
+                    class="cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-white hover:text-red-700 transition-colors duration-300 flex items-center">
+                    Graph
+                </a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">SPARQL Query Interface</h1>
+        </div>
+        
+        <!-- Query Type Tabs -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex">
+                    <button id="query-tab" class="query-tab-btn bg-gray-50 border-b-2 border-red-500 text-red-600 py-4 px-6 text-sm font-medium">
+                        SELECT Queries
+                    </button>
+                    <button id="update-tab" class="query-tab-btn text-gray-500 hover:text-gray-700 py-4 px-6 text-sm font-medium border-b-2 border-transparent hover:border-gray-300">
+                        INSERT/UPDATE/DELETE
+                    </button>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Main Interface -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Panel: Query Editor -->
+            <div class="lg:col-span-2">
+                <!-- SELECT Query Section -->
+                <div id="query-section" class="query-section">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                        <div class="bg-gray-100 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                </svg>
+                                SELECT Query Editor
+                            </h2>
+                        </div>
+                        
+                        <div class="p-4">
+                            <textarea id="sparqlQuery">PREFIX : <http://www.semanticweb.org/gonca/ontologies/2025/pokemon_ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?pokemon ?name ?pokedex_number
+WHERE {
+  ?pokemon rdf:type :Pokemon .
+  ?pokemon :name ?name .
+  ?pokemon :pokedex_number ?pokedex_number .
+}
+ORDER BY ?pokedex_number
+LIMIT 10</textarea>
+                        </div>
+                        
+                        <div class="bg-gray-100 px-4 py-3 border-t border-gray-200 flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <button id="runQuery" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Run Query
+                                </button>
+                                <button id="clearQuery" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md text-sm font-medium">
+                                    Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INSERT/UPDATE Query Section -->
+                <div id="update-section" class="query-section hidden">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                        <div class="bg-gray-100 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                                INSERT/UPDATE/DELETE Editor
+                            </h2>
+                        </div>
+                        
+                        <div class="p-4">
+                            <textarea id="sparqlUpdateQuery">PREFIX : <http://www.semanticweb.org/gonca/ontologies/2025/pokemon_ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+INSERT DATA {
+  :pernadipau rdf:type :Pokemon ;
+               :name "pernadipau" ;
+               :pokedex_number 999 ;
+               :hasType :Type_Grass ;
+               :isFrom :Generation_I .
+}</textarea>
+                        </div>
+                        
+                        <div class="bg-gray-100 px-4 py-3 border-t border-gray-200 flex justify-between items-center">
+                            <div class="flex space-x-2">
+                                <button id="runUpdateQuery" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    Execute Update
+                                </button>
+                                <button id="clearUpdateQuery" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md text-sm font-medium">
+                                    Clear
+                                </button>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">⚠️ Updates modify the ontology</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Results Section -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-gray-100 px-4 py-3 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            Results
+                        </h2>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div id="results-loading" class="hidden flex justify-center items-center py-8">
+                            <svg class="animate-spin h-8 w-8 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                        
+                        <div id="results-empty" class="text-center py-8 text-gray-500">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <p class="mt-2">Run a query to see results</p>
+                        </div>
+                        
+                        <div id="results-error" class="hidden bg-red-100 border border-red-400 rounded-md p-4 text-red-700">
+                            <div class="flex">
+                                <svg class="h-5 w-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div>
+                                    <h3 class="text-sm font-medium text-red-700">Query Error</h3>
+                                    <div class="mt-2 text-sm" id="error-message">
+                                        Error details will appear here
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="results-success" class="hidden bg-green-100 border border-green-400 rounded-md p-4 text-green-700">
+                            <div class="flex">
+                                <svg class="h-5 w-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                <div>
+                                    <h3 class="text-sm font-medium text-green-700">Update Successful</h3>
+                                    <div class="mt-2 text-sm" id="success-message">
+                                        Update operation completed successfully
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="results-table" class="hidden overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr id="results-headers">
+                                        <!-- Headers will be inserted here -->
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200" id="results-body">
+                                    <!-- Results will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Panel: Sample Queries -->
+            <div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-gray-100 px-4 py-3 border-b border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Sample Queries
+                        </h2>
+                    </div>
+                    
+                    <div class="p-4 space-y-3 max-h-[calc(100vh-300px)] overflow-y-auto">
+                        <!-- SELECT Samples -->
+                        <div id="select-samples" class="sample-section">
+                            <h3 class="font-medium text-gray-800 mb-3">SELECT Queries</h3>
+                            
+                            <div class="space-y-2">
+                                <button onclick="loadSelectSample('pokemon-list')" class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-red-500 transition-colors">
+                                    <div class="font-medium text-gray-700 text-sm">All Pokemon</div>
+                                    <div class="text-xs text-gray-500">Get all Pokemon with names and numbers</div>
+                                </button>
+                                
+                                <button onclick="loadSelectSample('pokemon-types')" class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-red-500 transition-colors">
+                                    <div class="font-medium text-gray-700 text-sm">Pokemon by Type</div>
+                                    <div class="text-xs text-gray-500">Get Pokemon grouped by their types</div>
+                                </button>
+                                
+                                <button onclick="loadSelectSample('type-count')" class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-red-500 transition-colors">
+                                    <div class="font-medium text-gray-700 text-sm">Count by Type</div>
+                                    <div class="text-xs text-gray-500">Count Pokemon for each type</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- UPDATE Samples -->
+                        <div id="update-samples" class="sample-section hidden">
+                            <h3 class="font-medium text-gray-800 mb-3">INSERT/UPDATE/DELETE</h3>
+                            
+                            <div class="space-y-2">
+                                <button onclick="loadUpdateSample('insert-pokemon')" class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-orange-500 transition-colors">
+                                    <div class="font-medium text-gray-700 text-sm">Insert New Pokemon</div>
+                                    <div class="text-xs text-gray-500">Add a new Pokemon to the ontology</div>
+                                </button>
+                                
+                                <button onclick="loadUpdateSample('update-pokemon')" class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-orange-500 transition-colors">
+                                    <div class="font-medium text-gray-700 text-sm">Update Pokemon</div>
+                                    <div class="text-xs text-gray-500">Modify existing Pokemon data</div>
+                                </button>
+                                
+                                <button onclick="loadUpdateSample('delete-pokemon')" class="w-full text-left p-3 border border-gray-200 rounded-md hover:border-orange-500 transition-colors">
+                                    <div class="font-medium text-gray-700 text-sm">Delete Pokemon</div>
+                                    <div class="text-xs text-gray-500">Remove a Pokemon from the ontology</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12 py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2025 Pokéntology</p>
+            <p class="text-gray-400 text-sm mt-2">A tool for exploring and generating Pokemon data relationships</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize CodeMirror editors
+        let queryEditor = CodeMirror.fromTextArea(document.getElementById("sparqlQuery"), {
+            mode: "application/sparql-query",
+            lineNumbers: true,
+            lineWrapping: true,
+            tabSize: 2,
+            indentWithTabs: false,
+            autoCloseBrackets: true,
+            matchBrackets: true
+        });
+
+        let updateEditor = CodeMirror.fromTextArea(document.getElementById("sparqlUpdateQuery"), {
+            mode: "application/sparql-query",
+            lineNumbers: true,
+            lineWrapping: true,
+            tabSize: 2,
+            indentWithTabs: false,
+            autoCloseBrackets: true,
+            matchBrackets: true
+        });
+
+        // Tab switching
+        document.getElementById('query-tab').addEventListener('click', () => switchTab('query'));
+        document.getElementById('update-tab').addEventListener('click', () => switchTab('update'));
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.query-tab-btn').forEach(btn => {
+                btn.className = 'query-tab-btn text-gray-500 hover:text-gray-700 py-4 px-6 text-sm font-medium border-b-2 border-transparent hover:border-gray-300';
+            });
+
+            // Update sections
+            document.querySelectorAll('.query-section').forEach(section => section.classList.add('hidden'));
+            document.querySelectorAll('.sample-section').forEach(section => section.classList.add('hidden'));
+
+            if (tab === 'query') {
+                document.getElementById('query-tab').className = 'query-tab-btn bg-gray-50 border-b-2 border-red-500 text-red-600 py-4 px-6 text-sm font-medium';
+                document.getElementById('query-section').classList.remove('hidden');
+                document.getElementById('select-samples').classList.remove('hidden');
+            } else {
+                document.getElementById('update-tab').className = 'query-tab-btn bg-gray-50 border-b-2 border-orange-500 text-orange-600 py-4 px-6 text-sm font-medium';
+                document.getElementById('update-section').classList.remove('hidden');
+                document.getElementById('update-samples').classList.remove('hidden');
+            }
+
+            clearResults();
+        }
+
+        function clearResults() {
+            document.getElementById('results-empty').classList.remove('hidden');
+            document.getElementById('results-error').classList.add('hidden');
+            document.getElementById('results-success').classList.add('hidden');
+            document.getElementById('results-table').classList.add('hidden');
+            document.getElementById('results-loading').classList.add('hidden');
+        }
+
+        // Sample query loaders
+        function loadSelectSample(type) {
+            const queries = {
+                'pokemon-list': `PREFIX : <http://www.semanticweb.org/gonca/ontologies/2025/pokemon_ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?pokemon ?name ?pokedex_number
+WHERE {
+  ?pokemon rdf:type :Pokemon .
+  ?pokemon :name ?name .
+  ?pokemon :pokedex_number ?pokedex_number .
+}
+ORDER BY ?pokedex_number
+LIMIT 20`,
+                'pokemon-types': `PREFIX : <http://www.semanticweb.org/gonca/ontologies/2025/pokemon_ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?pokemon ?name ?type
+WHERE {
+  ?pokemon rdf:type :Pokemon .
+  ?pokemon :name ?name .
+  ?pokemon :hasType ?type .
+}
+ORDER BY ?type ?name
+LIMIT 20`,
+                'type-count': `PREFIX : <http://www.semanticweb.org/gonca/ontologies/2025/pokemon_ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?type (COUNT(?pokemon) as ?count)
+WHERE {
+  ?pokemon rdf:type :Pokemon .
+  ?pokemon :hasType ?type .
+}
+GROUP BY ?type
+ORDER BY DESC(?count)`
+            };
+            
+            queryEditor.setValue(queries[type] || '');
+            queryEditor.focus();
+        }
+
+        function loadUpdateSample(type) {
+            const queries = {
+                'insert-pokemon': `PREFIX : <http://www.semanticweb.org/gonca/ontologies/2025/pokemon_ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+INSERT DATA {
+  :pernadipau rdf:type :Pokemon ;
+               :name "pernadipau" ;
+               :pokedex_number 999 ;
+               :hasType :Type_Grass ;
+               :isFrom :Generation_II .
+}`,
+                'update-pokemon': `PREFIX : <http://www.semanticweb.org/gonca/ontologies/2025/pokemon_ontology#>
+
+DELETE {
+  :bulbasaur :name ?oldName .
+}
+INSERT {
+  :bulbasaur :name "Bulbasaur Updated" .
+}
+WHERE {
+  :bulbasaur :name ?oldName .
+}`,
+                'delete-pokemon': `PREFIX : <http://www.semanticweb.org/gonca/ontologies/2025/pokemon_ontology#>
+
+DELETE WHERE {
+  :pernadipau ?p ?o .
+}`
+            };
+            
+            updateEditor.setValue(queries[type] || '');
+            updateEditor.focus();
+        }
+
+        // Clear buttons
+        document.getElementById('clearQuery').addEventListener('click', () => {
+            queryEditor.setValue('');
+            queryEditor.focus();
+        });
+
+        document.getElementById('clearUpdateQuery').addEventListener('click', () => {
+            updateEditor.setValue('');
+            updateEditor.focus();
+        });
+
+        // Execute buttons
+        document.getElementById('runQuery').addEventListener('click', () => {
+            executeQuery(queryEditor.getValue(), false);
+        });
+
+        document.getElementById('runUpdateQuery').addEventListener('click', () => {
+            executeQuery(updateEditor.getValue(), true);
+        });
+
+        function executeQuery(query, isUpdate) {
+            if (!query.trim()) {
+                showToast('Query cannot be empty', 'error');
+                return;
+            }
+
+            clearResults();
+            document.getElementById('results-loading').classList.remove('hidden');
+
+            const endpoint = isUpdate ? '/api/sparql-update' : '/api/sparql';
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('results-loading').classList.add('hidden');
+
+                if (data.error) {
+                    document.getElementById('error-message').textContent = data.error;
+                    document.getElementById('results-error').classList.remove('hidden');
+                    return;
+                }
+
+                if (isUpdate) {
+                    document.getElementById('success-message').textContent = data.message || 'Update completed successfully';
+                    document.getElementById('results-success').classList.remove('hidden');
+                } else {
+                    if (data.results && data.results.bindings && data.results.bindings.length > 0) {
+                        displayResults(data);
+                    } else {
+                        document.getElementById('results-empty').classList.remove('hidden');
+                    }
+                }
+            })
+            .catch(error => {
+                document.getElementById('results-loading').classList.add('hidden');
+                document.getElementById('error-message').textContent = error.message;
+                document.getElementById('results-error').classList.remove('hidden');
+            });
+        }
+
+        function displayResults(data) {
+            const variables = data.head.vars;
+            
+            // Create headers
+            const headersRow = document.getElementById('results-headers');
+            headersRow.innerHTML = '';
+            
+            variables.forEach(variable => {
+                const th = document.createElement('th');
+                th.className = 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+                th.textContent = variable;
+                headersRow.appendChild(th);
+            });
+            
+            // Create rows
+            const tbody = document.getElementById('results-body');
+            tbody.innerHTML = '';
+            
+            data.results.bindings.forEach(binding => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50';
+                
+                variables.forEach(variable => {
+                    const td = document.createElement('td');
+                    td.className = 'px-6 py-4 whitespace-nowrap text-sm';
+                    
+                    if (binding[variable]) {
+                        const value = binding[variable].value;
+                        const type = binding[variable].type;
+                        
+                        // Clean up URIs for display
+                        let displayValue = value;
+                        if (type === 'uri' && value.includes('#')) {
+                            displayValue = value.split('#').pop();
+                        }
+                        
+                        td.textContent = displayValue;
+                        
+                        // Make URIs clickable
+                        if (type === 'uri') {
+                            td.innerHTML = `<a href="${value}" class="text-blue-600 hover:text-blue-800" target="_blank">${displayValue}</a>`;
+                        }
+                    } else {
+                        td.textContent = '';
+                        td.className += ' text-gray-400';
+                    }
+                    
+                    tr.appendChild(td);
+                });
+                
+                tbody.appendChild(tr);
+            });
+            
+            document.getElementById('results-table').classList.remove('hidden');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-md text-white text-sm font-medium z-50 ${
+                type === 'success' ? 'bg-green-600' : 'bg-red-600'
+            }`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                setTimeout(() => document.body.removeChild(toast), 500);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
