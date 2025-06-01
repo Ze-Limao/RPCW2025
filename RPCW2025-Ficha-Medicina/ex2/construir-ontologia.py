@@ -19,10 +19,9 @@ new_graph.bind("rdfs", RDFS)
 
 # Define Ontology Structure
 new_graph.add((EX.Ontology, RDF.type, OWL.Ontology))
-new_graph.add((EX.Disease, RDF.type, OWL.Class))
-new_graph.add((EX.Symptom, RDF.type, OWL.Class))
-new_graph.add((EX.Treatment, RDF.type, OWL.Class))
-new_graph.add((EX.Patient, RDF.type, OWL.Class))
+new_graph.add((EX.Cidade, RDF.type, OWL.Class))
+new_graph.add((EX.Distrito, RDF.type, OWL.Class))
+new_graph.add((EX.Ligação, RDF.type, OWL.Class))
 
 # Define Properties
 new_graph.add((EX.hasSymptom, RDF.type, OWL.ObjectProperty))
